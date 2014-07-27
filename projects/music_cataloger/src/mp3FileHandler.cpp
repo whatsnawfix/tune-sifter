@@ -447,7 +447,7 @@ bool Mp3FileParser::ParseMp3ForId3v2Year( FILE* pFile, string& id3YearOut ) cons
 	fread( &id3Flags, sizeof(id3Flags), 1, pFile );
 
 	  // if any of the unused bits are set then we may be dealing with a corrupted mp3 file
-	const char UNUSED_FLAG_BITS = ~( 1<<7 | 1<<6 | 1<<5 );
+	const unsigned UNUSED_FLAG_BITS = ~( 1<<7 | 1<<6 | 1<<5 );
 	if( id3Flags & UNUSED_FLAG_BITS )
 	{
 		assert( !(id3Flags & UNUSED_FLAG_BITS) );
@@ -492,7 +492,7 @@ bool Mp3FileParser::ParseMp3ForId3v2Year( FILE* pFile, string& id3YearOut ) cons
 		  // now push past the extended header, we don't care about anything else in it
 		fseek( pFile, EXTENDED_HEADER_SIZE - ID3_EXTENDED_HEADER_FLAGS_OFFSET, SEEK_CUR );
 
-		const char EXTENDED_HEADER_CRC_DATA_FLAG = (1<<7);
+		const unsigned EXTENDED_HEADER_CRC_DATA_FLAG = (1<<7);
 		if( id3HiExtendedFlags & ~EXTENDED_HEADER_CRC_DATA_FLAG ) // only the msb is used, any other bits that are set might signify a corrupted file
 		{
 			assert( !(id3HiExtendedFlags & ~EXTENDED_HEADER_CRC_DATA_FLAG) ); 

@@ -87,6 +87,23 @@ string GetMusicCollectionPathForCurrentUser( void )
 		assert( 0 ); // failed to open the key we want, is the sub-key wrong?
 	}
 
+	const char ENV_VAR_DELIM = '%';
+	  // resolve environment variables
+	int offIndx = 0, envVarIndx = string::npos;
+	while( (envVarIndx = musicPathOut.find_first_of(ENV_VAR_DELIM, offIndx)) != string::npos )
+	{
+		int envVarBegin = envVarIndx + 1;
+		int envVarEnd	= musicPathOut.find_first_of( ENV_VAR_DELIM, envVarBegin );
+		assert( envVarEnd != string::npos ); // no ending delim?
+
+		size_t	envVarSize = 0;
+		char	envVarBuff[ MAX_PATH ] = {0};
+		getenv_s( &envVarSize, envVarBuff, MAX_PATH,  musicPathOut.substr(envVarBegin, envVarEnd - envVarBegin).c_str() );
+		assert( envVarSize > 0 ); // couldn't find the environment variable?
+
+		musicPathOut = musicPathOut.substr( 0, envVarIndx ) + envVarBuff + musicPathOut.substr( envVarEnd+1 ); 
+	}
+
 	return( musicPathOut );
 }
 
